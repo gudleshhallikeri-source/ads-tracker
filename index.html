@@ -1,86 +1,174 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>MDS Tracker</title>
-<!-- iPhone full‑screen + icon -->
-<meta name="apple-mobile-web-app-capable" content="yes" />
-<meta name="apple-mobile-web-app-title" content="MDS Tracker" />
-<meta name="theme-color" content="#ff7a00" />
-<link rel="apple-touch-icon" href="data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 128 128'%3E%3Crect width='128' height='128' fill='%23fff'/%3E%3Cg transform='translate(8,8)'%3E%3Crect x='0' y='0' width='112' height='112' rx='24' fill='%23ff7a00'/%3E%3Ctext x='56' y='78' font-size='50' text-anchor='middle' fill='white' font-family='Arial, Helvetica, sans-serif'%3EMDS%3C/text%3E%3C/g%3E%3C/svg%3E" />
-<!-- Chart.js for simple progress charts -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-<style>
-:root { --brand:#ff7a00; --ink:#111; --muted:#6b7280; --border:#e5e7eb; --bg:#ffffff; }
-* { box-sizing:border-box; }
-body { margin:0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, Noto Sans, 'Apple Color Emoji', 'Segoe UI Emoji'; color:var(--ink); background:var(--bg); }
-header { display:flex; align-items:center; justify-content:space-between; padding:16px; gap:12px; position:sticky; top:0; background:#fff; border-bottom:1px solid var(--border); z-index:5; }
-.brand { display:flex; align-items:center; gap:10px; font-weight:600; font-size:20px; }
-.brand img { width:32px; height:32px; border-radius:999px; }
-.btn { padding:8px 12px; border:1px solid var(--border); border-radius:12px; background:#fff; cursor:pointer; }
-.tabs { display:grid; grid-template-columns:repeat(3,1fr); border:1px solid var(--border); border-radius:12px; overflow:hidden; margin:12px 16px 0; }
-.tab { padding:10px; font-size:14px; border-right:1px solid var(--border); background:#fff; cursor:pointer; }
-.tab:last-child { border-right:none; }
-.tab.active { background:#111; color:#fff; }
-main { padding:16px; max-width:1100px; margin:0 auto; }
-.card { border:1px solid var(--border); border-radius:16px; background:#fff; overflow:hidden; }
-.card-h { display:flex; align-items:center; gap:10px; padding:12px 16px; border-bottom:1px solid var(--border); font-weight:600; }
-.grid { display:grid; gap:12px; }
-@media (min-width:640px){ .grid-cols-2{ grid-template-columns:repeat(2,1fr);} }
-@media (min-width:768px){ .grid-cols-3{ grid-template-columns:repeat(3,1fr);} }
-@media (min-width:1024px){ .grid-cols-4{ grid-template-columns:repeat(4,1fr);} }
-.day { border:1px solid var(--border); border-radius:16px; padding:12px; display:flex; flex-direction:column; gap:8px; }
-.day h3 { margin:0; font-size:16px; }
-textarea, input[type="number"], input[type="text"] { width:100%; border:1px solid var(--border); border-radius:12px; padding:8px; font-size:14px; }
-label.small { font-size:12px; color:var(--muted); display:block; margin:4px 0; }
-.row { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
-.spacer { height:8px; }
-ul { margin:6px 0 0 18px; padding:0; }
-li { margin:4px 0; }
-.muted { color:var(--muted); font-size:12px; }
-</style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>MDS Tracker</title>
+
+  <!-- iPhone full-screen + icon -->
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="MDS Tracker" />
+  <meta name="theme-color" content="#ff7a00" />
+  <!-- Simple built-in icon (orange MDS tile).
+       You can replace this href later with your real PNG if you want. -->
+  <link rel="apple-touch-icon"
+        href="data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 128 128'%3E%3Crect width='128' height='128' fill='%23fff'/%3E%3Cg transform='translate(8,8)'%3E%3Crect x='0' y='0' width='112' height='112' rx='24' fill='%23ff7a00'/%3E%3Ctext x='56' y='78' font-size='50' text-anchor='middle' fill='white' font-family='Arial, Helvetica, sans-serif'%3EMDS%3C/text%3E%3C/g%3E%3C/svg%3E" />
+
+  <!-- Chart.js for simple progress charts -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+  <style>
+    :root { --brand:#ff7a00; --ink:#111; --muted:#6b7280; --border:#e5e7eb; --bg:#ffffff; }
+    * { box-sizing:border-box; }
+    body { margin:0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+           color:var(--ink); background:var(--bg); }
+    header { display:flex; align-items:center; justify-content:space-between; padding:16px; gap:12px;
+             position:sticky; top:0; background:#fff; border-bottom:1px solid var(--border); z-index:5; }
+    .brand { display:flex; align-items:center; gap:10px; font-weight:600; font-size:20px; }
+    .brand img { width:32px; height:32px; border-radius:999px; }
+    .btn { padding:8px 12px; border:1px solid var(--border); border-radius:12px; background:#fff; cursor:pointer; }
+    .tabs { display:grid; grid-template-columns:repeat(3,1fr); border:1px solid var(--border); border-radius:12px;
+            overflow:hidden; margin:12px 16px 0; }
+    .tab { padding:10px; font-size:14px; border-right:1px solid var(--border); background:#fff; cursor:pointer; }
+    .tab:last-child { border-right:none; }
+    .tab.active { background:#111; color:#fff; }
+    main { padding:16px; max-width:1100px; margin:0 auto; }
+    .card { border:1px solid var(--border); border-radius:16px; background:#fff; overflow:hidden; }
+    .card-h { display:flex; align-items:center; gap:10px; padding:12px 16px; border-bottom:1px solid var(--border); font-weight:600; }
+    .grid { display:grid; gap:12px; }
+    @media (min-width:640px){ .grid-cols-2{ grid-template-columns:repeat(2,1fr);} }
+    @media (min-width:768px){ .grid-cols-3{ grid-template-columns:repeat(3,1fr);} }
+    @media (min-width:1024px){ .grid-cols-4{ grid-template-columns:repeat(4,1fr);} }
+    .day { border:1px solid var(--border); border-radius:16px; padding:12px; display:flex; flex-direction:column; gap:8px; }
+    .day h3 { margin:0; font-size:16px; }
+    textarea, input[type="number"], input[type="text"] { width:100%; border:1px solid var(--border); border-radius:12px; padding:8px; font-size:14px; }
+    label.small { font-size:12px; color:var(--muted); display:block; margin:4px 0; }
+    .row { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+    .spacer { height:8px; }
+    ul { margin:6px 0 0 18px; padding:0; }
+    li { margin:4px 0; }
+    .muted { color:var(--muted); font-size:12px; }
+  </style>
 </head>
 <body>
-<header>
-<div class="brand">
-<img alt="MDS" src="data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 128 128'%3E%3Crect width='128' height='128' fill='%23fff'/%3E%3Cg transform='translate(8,8)'%3E%3Crect x='0' y='0' width='112' height='112' rx='24' fill='%23ff7a00'/%3E%3Ctext x='56' y='78' font-size='50' text-anchor='middle' fill='white' font-family='Arial, Helvetica, sans-serif'%3EMDS%3C/text%3E%3C/g%3E%3C/svg%3E"/>
-<div>MDS Tracker</div>
-</div>
-<div class="row">
-<button class="btn" id="prevBtn">◀︎ Prev</button>
-<button class="btn" id="todayBtn">📅 This Week</button>
-<button class="btn" id="nextBtn">Next ▶︎</button>
-</div>
-</header>
+  <header>
+    <div class="brand">
+      <img alt="MDS"
+           src="data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 128 128'%3E%3Crect width='128' height='128' fill='%23fff'/%3E%3Cg transform='translate(8,8)'%3E%3Crect x='0' y='0' width='112' height='112' rx='24' fill='%23ff7a00'/%3E%3Ctext x='56' y='78' font-size='50' text-anchor='middle' fill='white' font-family='Arial, Helvetica, sans-serif'%3EMDS%3C/text%3E%3C/g%3E%3C/svg%3E"/>
+      <div>MDS Tracker</div>
+    </div>
+    <div class="row">
+      <button class="btn" id="prevBtn">◀︎ Prev</button>
+      <button class="btn" id="todayBtn">📅 This Week</button>
+      <button class="btn" id="nextBtn">Next ▶︎</button>
+    </div>
+  </header>
 
-<div class="tabs">
-<button class="tab active" data-tab="calendar">Calendar</button>
-<button class="tab" data-tab="strength">Strength</button>
-<button class="tab" data-tab="progress">Progress</button>
-</div>
+  <div class="tabs">
+    <button class="tab active" data-tab="calendar">Calendar</button>
+    <button class="tab" data-tab="strength">Strength</button>
+    <button class="tab" data-tab="progress">Progress</button>
+  </div>
 
-<main>
-<!-- CALENDAR -->
-<section id="calendar" class="tabpanel">
-<div class="card">
-<div class="card-h"><img alt="MDS" src="data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 128 128'%3E%3Crect width='128' height='128' fill='%23fff'/%3E%3Cg transform='translate(8,8)'%3E%3Crect x='0' y='0' width='112' height='112' rx='24' fill='%23ff7a00'/%3E%3Ctext x='56' y='78' font-size='50' text-anchor='middle' fill='white' font-family='Arial, Helvetica, sans-serif'%3EMDS%3C/text%3E%3C/g%3E%3C/svg%3E" style="width:20px;height:20px;border-radius:999px"/> Week of <span id="weekTitle" style="margin-left:6px"></span></div>
-<div class="grid grid-cols-1 grid-cols-2 grid-cols-3 grid-cols-4" style="padding:12px" id="daysGrid"></div>
-</div>
-<div class="spacer"></div>
-<div class="row">
-<button class="btn" id="exportBtn">⬇︎ Export Backup</button>
-<label class="btn" for="importFile" style="cursor:pointer">⬆︎ Import Backup<input id="importFile" type="file" accept="application/json" style="display:none"/></label>
-</div>
-</section>
+  <main>
+    <!-- CALENDAR -->
+    <section id="calendar" class="tabpanel">
+      <div class="card">
+        <div class="card-h">
+          <img alt="MDS"
+               src="data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 128 128'%3E%3Crect width='128' height='128' fill='%23fff'/%3E%3Cg transform='translate(8,8)'%3E%3Crect x='0' y='0' width='112' height='112' rx='24' fill='%23ff7a00'/%3E%3Ctext x='56' y='78' font-size='50' text-anchor='middle' fill='white' font-family='Arial, Helvetica, sans-serif'%3EMDS%3C/text%3E%3C/g%3E%3C/svg%3E"
+               style="width:20px;height:20px;border-radius:999px"/>
+          Week of <span id="weekTitle" style="margin-left:6px"></span>
+        </div>
+        <div class="grid grid-cols-1 grid-cols-2 grid-cols-3 grid-cols-4" style="padding:12px" id="daysGrid"></div>
+      </div>
+      <div class="spacer"></div>
+      <div class="row">
+        <button class="btn" id="exportBtn">⬇︎ Export Backup</button>
+        <label class="btn" for="importFile" style="cursor:pointer">⬆︎ Import Backup
+          <input id="importFile" type="file" accept="application/json" style="display:none"/>
+        </label>
+      </div>
+    </section>
 
-<!-- STRENGTH -->
-<section id="strength" class="tabpanel" hidden>
-<div class="card">
-<div class="card-h"><img alt="MDS" src="data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 128 128'%3E%3Crect width='128' height='128' fill='%23fff'/%3E%3Cg transform='translate(8,8)'%3E%3Crect x='0' y='0' width='112' height='112' rx='24' fill='%23ff7a00'/%3E%3Ctext x='56' y='78' font-size='50' text-anchor='middle' fill='white' font-family='Arial, Helvetica, sans-serif'%3EMDS%3C/text%3E%3C/g%3E%3C/svg%3E" style="width:20px;height:20px;border-radius:999px"/> Strength Schedule (Mon & Wed) – to Mar 2026</div>
-<div id="strengthList" style="padding:12px" class="grid grid-cols-1 grid-cols-2"></div>
-<div class="muted" style="padding:0 12px 12px">Tempo 20X1 on presses/rows where noted. Rest 60–90s. Leave 1–2 reps in the tank.</div>
-</div>
-</section>
+    <!-- STRENGTH -->
+    <section id="strength" class="tabpanel" hidden>
+      <div class="card">
+        <div class="card-h">
+          <img alt="MDS"
+               src="data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 128  128'%3E%3Crect width='128' height='128' fill='%23fff'/%3E%3Cg transform='translate(8,8)'%3E%3Crect x='0' y='0' width='112' height='112' rx='24' fill='%23ff7a00'/%3E%3Ctext x='56' y='78' font-size='50' text-anchor='middle' fill='white' font-family='Arial, Helvetica, sans-serif'%3EMDS%3C/text%3E%3C/g%3E%3C/svg%3E"
+               style="width:20px;height:20px;border-radius:999px"/>
+          Strength Schedule (Mon & Wed) – to Mar 2026
+        </div>
+        <div id="strengthList" style="padding:12px" class="grid grid-cols-1 grid-cols-2"></div>
+        <div class="muted" style="padding:0 12px 12px">Tempo 20X1 on presses/rows where noted. Rest 60–90s. Leave 1–2 reps in the tank.</div>
+      </div>
+    </section>
 
+    <!-- PROGRESS -->
+    <section id="progress" class="tabpanel" hidden>
+      <div class="card" style="margin-bottom:12px">
+        <div class="card-h">
+          <img alt="MDS"
+               src="data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 128 128'%3E%3Crect width='128' height='128' fill='%23fff'/%3E%3Cg transform='translate(8,8)'%3E%3Crect x='0' y='0' width='112' height='112' rx='24' fill='%23ff7a00'/%3E%3Ctext x='56' y='78' font-size='50' text-anchor='middle' fill='white' font-family='Arial, Helvetica, sans-serif'%3EMDS%3C/text%3E%3C/g%3E%3C/svg%3E"
+               style="width:20px;height:20px;border-radius:999px"/>
+          Running Distance Over Time
+        </div>
+        <div style="padding:12px"><canvas id="distanceChart" height="200"></canvas></div>
+      </div>
+      <div class="card">
+        <div class="card-h">
+          <img alt="MDS"
+               src="data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 128 128'%3E%3Crect width='128' height='128' fill='%23fff'/%3E%3Cg transform='translate(8,8)'%3E%3Crect x='0' y='0' width='112' height='112' rx='24' fill='%23ff7a00'/%3E%3Ctext x='56' y='78' font-size='50' text-anchor='middle' fill='white' font-family='Arial, Helvetica, sans-serif'%3EMDS%3C/text%3E%3C/g%3E%3C/svg%3E"
+               style="width:20px;height:20px;border-radius:999px"/>
+          Session RPE Trend
+        </div>
+        <div style="padding:12px"><canvas id="rpeChart" height="200"></canvas></div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    // ---------- Helpers & Storage ----------
+    const STORAGE_KEY = 'mds-tracker-v1';
+    const today = new Date();
+    const DEFAULT_START = new Date(2025,7,28); // Aug 28, 2025
+    const END_DATE = new Date(2026,2,31);     // Mar 31, 2026
+    const DAY_NAMES = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+
+    function startOfWeek(d){ const x=new Date(d); const dow=(x.getDay()+6)%7; x.setDate(x.getDate()-dow); x.setHours(0,0,0,0); return x; }
+    function formatDateISO(d){ const z=n=>String(n).padStart(2,'0'); return `${d.getFullYear()}-${z(d.getMonth()+1)}-${z(d.getDate())}`; }
+
+    function loadState(){ try{ const raw=localStorage.getItem(STORAGE_KEY); return raw? JSON.parse(raw): { logs:{}, weekStart:startOfWeek(today).toISOString() }; }catch(e){ return { logs:{}, weekStart:startOfWeek(today).toISOString() }; } }
+    function saveState(s){ localStorage.setItem(STORAGE_KEY, JSON.stringify(s)); }
+
+    // ---------- Base Plan ----------
+    function basePlanForDate(date){
+      const wd=(date.getDay()+6)%7; // 0=Mon
+      if (wd===0||wd===2) return 'BJJ (evening) + Strength (see Strength tab)';
+      if (wd===4) return 'BJJ (evening) + Mobility/Walk';
+      if (wd===1) return 'Calisthenics (AM) + Easy Run (Z2)';
+      if (wd===3) return 'Calisthenics (AM) + Tempo Run';
+      if (wd===5) return 'Calisthenics (light) + Long Run/Walk';
+      if (wd===6) return 'Recovery Walk + Mobility';
+      return '';
+    }
+
+    // ---------- Strength Rotations (8-week template) ----------
+    const TEMPLATE_BANK = [
+      { Mon:['Superset A: Bent Over Row – 3×4–6 @20X1','Flat DB Bench – 3×4–6 @20X1','Superset B: Weighted Pull-Up – 3×4–6','Standing DB Shoulder Press – 3×6–8','Arms: EZ Curl – 3×8–12','EZ Skull Crusher – 3×8–12'],
+        Wed:['Superset A: Incline DB Row – 3×8–10 @20X1','Arnold Press – 3×8–10 @20X1','Superset B: Barbell Row – 3×6–8','Incline DB Bench – 3×6–8','Arms: DB Zottman Curl – 3×10–12','DB Crush Press – 3×10–12'] },
+      { Mon:['Superset A: Chest Supported Row – 3×4–6','Overhead Barbell Press – 3×4–6','Superset B: Weighted Dip – 3×6–8','Wide Lat Pulldown – 3×6–8','Arms: Barbell Curl – 3×8–12','Overhead DB Tricep Ext – 3×8–12'],
+        Wed:['Superset A: T-Bar Row – 3×6–8','DB Incline Press – 3×6–8','Superset B: Seated DB Press – 3×8–10','Cable Row – 3×8–10','Arms: Incline DB Curl – 3×10–12','Close-Grip Push-Up – 3×12–15'] },
+      { Mon:['Superset A: 1-Arm DB Row – 3×6–8','Weighted Push-Up – 3×6–8','Superset B: Military Press – 3×6–8','Face Pull – 3×12–15','Arms: Hammer Curl – 3×10–12','Rope Tricep Ext – 3×10–12'],
+        Wed:['Superset A: Landmine Row – 3×6–8','Incline Barbell Bench – 3×6–8','Superset B: DB Lateral Raise – 3×10–12','Chest-Supported DB Row – 3×8–10','Arms: Preacher Curl – 3×8–12','Dips – 3×8–12'] },
+      { Mon:['Superset A: Pendlay Row – 3×4–6','DB Flat Press (neutral) – 3×4–6','Superset B: Neutral-Grip Pull-Up – 3×4–6','Seated Barbell Press – 3×6–8','Arms: Concentration Curl – 3×10–12','Kickbacks – 3×12–15'],
+        Wed:['Superset A: Chest Supported Row – 3×6–8','Incline DB Press – 3×6–8','Superset B: Arnold Press – 3×8–10','Cable High Row – 3×8–10','Arms: Barbell Drag Curl – 3×8–12','JM Press – 3×8–12'] },
+      { Mon:['Superset A: Cable Row – 3×6–8','Decline DB Bench – 3×6–8','Superset B: Pull-Up (rings/neutral) – 3×5–7','Landmine Press – 3×6–8','Arms: Reverse Curl – 3×10–12','Rope Pushdown – 3×10–12'],
+        Wed:['Superset A: Meadows Row – 3×6–8','DB Incline Press (pause 1s) – 3×6–8','Superset B: Machine Shoulder Press – 3×8–10','Wide Pulldown – 3×8–10','Arms: Cable Curl – 3×12–15','Cross-Body Tricep Ext – 3×12–15'] },
+      { Mon:['Superset A: Seal Row – 3×6–8','Floor Press – 3×6–8','Superset B: Chin-Up (weighted/assist) – 3×5–7','DB High-Incline Press – 3×6–8','Arms: Spider Curl – 3×10–12','EZ Skull Crusher – 3×8–12'],
+        Wed:['Superset A: Yates Row – 3×6–8','Close-Grip Bench – 3×6–8','Superset B: Lateral Raise (strict) – 3×12–15','Straight-Arm Pulldown – 3×12–15','Arms: Bayesian Cable Curl – 3×12–15','Overhead Rope Ext – 3×12–15'] },
+      { Mon:['Superset A: Kroc Row – 3×6–8','Weighted Dip – 3×6–8','Superset B: Z-Press – 3×6–8','Chest-Supported Row – 3×8–10','Arms: Cable EZ Curl – 3×10–12','DB French Press – 3×10–12'],
+        Wed:['Superset A: Machine Row – 3×6–8','Smith Incline Press – 3×6–8','Superset B: Upright Row (EZ) – 3×8–10','Pulldown (neutral) – 3×8–10','Arms: Rope Hammer Curl – 3×12–15','Bench Dips – 3×12–15'] },
+      { Mon:['Superset A: Wide-Grip Row – 3×6–8','DB Squeeze Press – 3×8–10','Superset B: Ring Pull-Up – 3×5–7','
 
