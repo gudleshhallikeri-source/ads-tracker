@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>MDS Tracker</title>
+<!-- iPhone full‑screen + icon -->
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-title" content="MDS Tracker" />
+<meta name="theme-color" content="#ff7a00" />
+<link rel="apple-touch-icon" href="data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 128 128'%3E%3Crect width='128' height='128' fill='%23fff'/%3E%3Cg transform='translate(8,8)'%3E%3Crect x='0' y='0' width='112' height='112' rx='24' fill='%23ff7a00'/%3E%3Ctext x='56' y='78' font-size='50' text-anchor='middle' fill='white' font-family='Arial, Helvetica, sans-serif'%3EMDS%3C/text%3E%3C/g%3E%3C/svg%3E" />
+<!-- Chart.js for simple progress charts -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+:root { --brand:#ff7a00; --ink:#111; --muted:#6b7280; --border:#e5e7eb; --bg:#ffffff; }
+* { box-sizing:border-box; }
+body { margin:0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, Noto Sans, 'Apple Color Emoji', 'Segoe UI Emoji'; color:var(--ink); background:var(--bg); }
+header { display:flex; align-items:center; justify-content:space-between; padding:16px; gap:12px; position:sticky; top:0; background:#fff; border-bottom:1px solid var(--border); z-index:5; }
+.brand { display:flex; align-items:center; gap:10px; font-weight:600; font-size:20px; }
+.brand img { width:32px; height:32px; border-radius:999px; }
+.btn { padding:8px 12px; border:1px solid var(--border); border-radius:12px; background:#fff; cursor:pointer; }
+.tabs { display:grid; grid-template-columns:repeat(3,1fr); border:1px solid var(--border); border-radius:12px; overflow:hidden; margin:12px 16px 0; }
+.tab { padding:10px; font-size:14px; border-right:1px solid var(--border); background:#fff; cursor:pointer; }
+.tab:last-child { border-right:none; }
+.tab.active { background:#111; color:#fff; }
+main { padding:16px; max-width:1100px; margin:0 auto; }
+.card { border:1px solid var(--border); border-radius:16px; background:#fff; overflow:hidden; }
+.card-h { display:flex; align-items:center; gap:10px; padding:12px 16px; border-bottom:1px solid var(--border); font-weight:600; }
+.grid { display:grid; gap:12px; }
+@media (min-width:640px){ .grid-cols-2{ grid-template-columns:repeat(2,1fr);} }
+@media (min-width:768px){ .grid-cols-3{ grid-template-columns:repeat(3,1fr);} }
+@media (min-width:1024px){ .grid-cols-4{ grid-template-columns:repeat(4,1fr);} }
+.day { border:1px solid var(--border); border-radius:16px; padding:12px; display:flex; flex-direction:column; gap:8px; }
+.day h3 { margin:0; font-size:16px; }
+textarea, input[type="number"], input[type="text"] { width:100%; border:1px solid var(--border); border-radius:12px; padding:8px; font-size:14px; }
+label.small { font-size:12px; color:var(--muted); display:block; margin:4px 0; }
+.row { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+.spacer { height:8px; }
+ul { margin:6px 0 0 18px; padding:0; }
+li { margin:4px 0; }
+.muted { color:var(--muted); font-size:12px; }
+</style>
+</head>
+<body>
+<header>
+<div class="brand">
+<img alt="MDS" src="data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 128 128'%3E%3Crect width='128' height='128' fill='%23fff'/%3E%3Cg transform='translate(8,8)'%3E%3Crect x='0' y='0' width='112' height='112' rx='24' fill='%23ff7a00'/%3E%3Ctext x='56' y='78' font-size='50' text-anchor='middle' fill='white' font-family='Arial, Helvetica, sans-serif'%3EMDS%3C/text%3E%3C/g%3E%3C/svg%3E"/>
+<div>MDS Tracker</div>
+</div>
+<div class="row">
+<button class="btn" id="prevBtn">◀︎ Prev</button>
+<button class="btn" id="todayBtn">📅 This Week</button>
+<button class="btn" id="nextBtn">Next ▶︎</button>
+</div>
+</header>
+
+<div class="tabs">
+<button class="tab active" data-tab="calendar">Calendar</button>
+<button class="tab" data-tab="strength">Strength</button>
+<button class="tab" data-tab="progress">Progress</button>
+</div>
+
+<main>
+<!-- CALENDAR -->
+<section id="calendar" class="tabpanel">
+<div class="card">
+<div class="card-h"><img alt="MDS" src="data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 128 128'%3E%3Crect width='128' height='128' fill='%23fff'/%3E%3Cg transform='translate(8,8)'%3E%3Crect x='0' y='0' width='112' height='112' rx='24' fill='%23ff7a00'/%3E%3Ctext x='56' y='78' font-size='50' text-anchor='middle' fill='white' font-family='Arial, Helvetica, sans-serif'%3EMDS%3C/text%3E%3C/g%3E%3C/svg%3E" style="width:20px;height:20px;border-radius:999px"/> Week of <span id="weekTitle" style="margin-left:6px"></span></div>
+<div class="grid grid-cols-1 grid-cols-2 grid-cols-3 grid-cols-4" style="padding:12px" id="daysGrid"></div>
+</div>
+<div class="spacer"></div>
+<div class="row">
+<button class="btn" id="exportBtn">⬇︎ Export Backup</button>
+<label class="btn" for="importFile" style="cursor:pointer">⬆︎ Import Backup<input id="importFile" type="file" accept="application/json" style="display:none"/></label>
+</div>
+</section>
+
+<!-- STRENGTH -->
+<section id="strength" class="tabpanel" hidden>
+<div class="card">
+<div class="card-h"><img alt="MDS" src="data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 128 128'%3E%3Crect width='128' height='128' fill='%23fff'/%3E%3Cg transform='translate(8,8)'%3E%3Crect x='0' y='0' width='112' height='112' rx='24' fill='%23ff7a00'/%3E%3Ctext x='56' y='78' font-size='50' text-anchor='middle' fill='white' font-family='Arial, Helvetica, sans-serif'%3EMDS%3C/text%3E%3C/g%3E%3C/svg%3E" style="width:20px;height:20px;border-radius:999px"/> Strength Schedule (Mon & Wed) – to Mar 2026</div>
+<div id="strengthList" style="padding:12px" class="grid grid-cols-1 grid-cols-2"></div>
+<div class="muted" style="padding:0 12px 12px">Tempo 20X1 on presses/rows where noted. Rest 60–90s. Leave 1–2 reps in the tank.</div>
+</div>
+</section>
+
+
